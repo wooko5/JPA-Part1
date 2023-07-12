@@ -246,13 +246,13 @@
 
      -  도메인 모델
 
-        -  ![image-20230712234814302](C:\Users\USER\AppData\Roaming\Typora\typora-user-images\image-20230712234814302.png)
+        -  ![image-20230712234814302](https://github.com/wooko5/JPA-Part1/assets/58154633/e7dab834-ff6a-446d-95cb-b28ff4fc1b47)
         -  many to many는 최대한 사용하지 말자
         -  단방향 관계를 지향하자
 
      -  회원 엔티티 분석(객체)
 
-        -  ![image-20230713001456853](C:\Users\USER\AppData\Roaming\Typora\typora-user-images\image-20230713001456853.png)
+        -  ![image-20230713001456853](https://github.com/wooko5/JPA-Part1/assets/58154633/f135b524-808d-4f7d-94e6-b0fcb7820620)
         -  TIP - 회원이 주문을 하기 때문에, 회원이 주문리스트를 가지는 것은 얼핏 보면 잘 설계한 것 같지만, 객체 세상은 실제 세계와는 다르다. 
         -  실무에서는 회원이 주문을 참조하지 않고, 주문이 회원을 참조하는 것으로 충분하다.
         -  SQL 쿼리문을 짤 때도 특정 회원의 주문을 조회하고 싶을 때, 주문 테이블에서 조건문에 회원을 넣지 않는가
@@ -260,7 +260,7 @@
 
      -  회원 테이블 분석(RDB)
 
-        -  ![image-20230713001839270](C:\Users\USER\AppData\Roaming\Typora\typora-user-images\image-20230713001839270.png)
+        -  ![image-20230713001839270](https://github.com/wooko5/JPA-Part1/assets/58154633/11865685-22aa-4928-bf72-a1bd15a4cb95)
         -  ITEM 테이블(싱글테이블 전략)
            -  DTYPE 컬럼으로 타입을 구분하기에 성능상 유리함(조인하지 않기에 조회 성능이 빠르고, 조회 쿼리가 단순)
            -  한 테이블에 다 때려박기에 테이블 크기가 너무 커지면 성능상 문제가 생길 수 있음
