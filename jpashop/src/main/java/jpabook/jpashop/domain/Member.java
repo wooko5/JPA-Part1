@@ -21,6 +21,7 @@ public class Member {
     @Embedded
     private Address address;
 
-    @OneToMany
+    // Order 클래스의 private Member member;에서 따온 것, JoinColum 방식(DB 칼럼명을 씀)과 헷갈리지 않도록 조심!
+    @OneToMany(mappedBy = "member")
     private List<Order> orders = new ArrayList<>();
 }
