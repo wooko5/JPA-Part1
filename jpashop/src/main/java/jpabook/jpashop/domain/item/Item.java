@@ -31,7 +31,8 @@ public abstract class Item {
 
     private int stockQuantity;
 
-//    private List<Category> categories = new ArrayList<>();
+    @ManyToMany(mappedBy = "items")
+    private List<Category> categories = new ArrayList<>();
 
     @OneToMany(mappedBy = "item")
     private List<OrderItem> orderItems = new ArrayList<>();
