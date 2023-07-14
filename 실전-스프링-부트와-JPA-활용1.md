@@ -321,7 +321,7 @@
          >
          > 
          >
-         > 중간 엔티티( CategoryItem 를 만들고 @ManyToOne , @OneToMany 로 매핑해서 사용하자. 
+         > 중간 엔티티로 CategoryItem 를 만들고 @ManyToOne , @OneToMany 로 매핑해서 사용하자. 
          >
          > 
          >
