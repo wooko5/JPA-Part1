@@ -424,7 +424,7 @@
            3. 대문자 소문자
            ```
      
-         - ![image-20230715083501342](C:\Users\USER\AppData\Roaming\Typora\typora-user-images\image-20230715083501342.png)
+         - ![image](https://github.com/wooko5/JPA-Part1/assets/58154633/6e92bf4c-22c6-48d2-a2bb-b8dba38a0fbe)
      
      - `cascade = CascadeType.ALL`
      
