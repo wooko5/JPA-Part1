@@ -32,15 +32,21 @@ public class Category {
             joinColumns = @JoinColumn(name = "category_id"),
             inverseJoinColumns = @JoinColumn(name = "item_id")
     )
-    private List<Item> items = new ArrayList<>();
+    private List<Item> items = new ArrayList<>(); // 컬렉션은 필드에서 초기화하자
 
     /**
      * parent와 child는 Category 자기 자신에게 양방향 관계를 만든 것이다.
      */
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY) // 모든 연관관계는 지연로딩으로 설정
     @JoinColumn(name = "parent_id")
     private Category parent;
 
     @OneToMany(mappedBy = "parent")
-    private List<Category> child = new ArrayList<>();
+    private List<Category> child = new ArrayList<>(); // 컬렉션은 필드에서 초기화하자
+
+    /* 연관관계 편의 메소드 생성 */
+    public void addChildCategory(Category child){
+        this.child.add(child);
+        child.setParent(this);
+    }
 }

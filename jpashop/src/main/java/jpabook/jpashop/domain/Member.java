@@ -27,5 +27,5 @@ public class Member {
      * 즉 Member는 Order를 수정할 수 없고 조회만 가능하지만, Order는 Member를 가지고 있기에 조회 수정 모두 가능
      */
     @OneToMany(mappedBy = "member")
-    private List<Order> orders = new ArrayList<>();
+    private List<Order> orders = new ArrayList<>(); // 컬렉션은 필드에서 초기화 하자.
 }

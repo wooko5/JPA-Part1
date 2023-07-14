@@ -13,7 +13,7 @@ public class Delivery {
     @Column(name = "delivery_id") // DB에 표현될 칼럼명
     private Long id;
 
-    @OneToOne(mappedBy = "delivery")
+    @OneToOne(mappedBy = "delivery", fetch = FetchType.LAZY) // 모든 연관관계는 지연로딩으로 설정한다
     private Order order;
 
     @Embedded

@@ -359,8 +359,10 @@
          3. 연관된 엔티티를 함께 DB에서 조회해야 하면, fetch join 또는 엔티티 그래프 기능을 사용한다.
          
          4. @XxxxToOne(OneToOne, ManyToOne) 관계는 기본이 즉시로딩이므로 직접 지연로딩으로 설정해야 한다.
+         
+         5. @ManyToMany, @OneToMany는 기본이 LAZY임
          ```
-
+         
        - 즉시로딩(EAGER)은 특정 엔티티를 조회할 때, 해당 엔티티와 관련있는 다른 엔티티의 정보도 같이 조회한다
 
        - 예를 들어, Member와 Order는 1대다 관계이다. 여기서 주인은 Member를 FK로 가지고 있는 Order인데 Order의 데이터를 가져오고 싶을 때 FetchType을 즉시로딩(EAGER)로 하면 Order뿐만 아니라 Member의 정보도 같이 가지고 온다
@@ -368,14 +370,98 @@
        - 지연로딩(LAZY)는 특정 엔티티를 조회할 때, 해당 엔티티의 정보만 조회하고 연관된 다른 엔티티의 정보를 가져오지 않는다. 대신 실제로 다른 엔티티에 접근할 때 프록시를 통해 가져온다.
 
        - `N+1 문제`
-
+     
          - N + 1 문제는 연관관계가 설정된 엔티티 사이에서 한 엔티티를 조회하였을 때, 조회된 엔티티의 개수(N 개)만큼 연관된 엔티티를 조회하기 위해 추가적인 쿼리가 발생하는 문제
          - 예를 들어, Member와 Order가 연관관계이다. 여기서 Order의 데이터 개수가 100개라고 한다면, Member 정보 1개를 가져올려고 쿼리 1개랑 Order 데이터 100개의 쿼리를 보내서 총 1+100개의 Member 정보를 가져오기 위한 중복 쿼리가 실행된다. 이를 `N+1 문제`라고 한다 
          - 여기까지 했음
 
-     - 컬렉션은 필드에서 초기화하자
-
-     - 테이블명, 칼럼명 생성 전략
+     - **컬렉션은 필드에서 초기화하자**
+     
+       - ```markdown
+         컬렉션은 필드에서 바로 초기화 하는 것이 안전하다.
+         
+         null 문제에서 안전하다.
+         
+         하이버네이트는 엔티티를 영속화 할 때, 컬랙션을 감싸서 하이버네이트가 제공하는 내장 컬렉션으로 변경한다. 
+         
+         만약 getOrders() 처럼 임의의 메서드에서 컬력션을 잘못 생성하면 하이버네이트 내부 메커니즘에 문제가 발생할 수 있다. 
+         
+         따라서 필드레벨에서 생성하는 것이 가장 안전하고, 코드도 간결하다.
+         ```
+     
+       - ```java
+         Member member = new Member();
+         System.out.println(member.getOrders().getClass());
+         
+         em.persist(member);
+         System.out.println(member.getOrders().getClass());
+         
+         /* 출력 결과 */
+         class java.util.ArrayList
+         class org.hibernate.collection.internal.PersistentBag
+         ```
+     
+     - **테이블명, 칼럼명 생성 전략**
+     
+       - 스프링 부트에서 하이버네이트 기본 매핑 전략을 변경해서 실제 테이블 필드명은 다름
+     
+       - 참조
+     
+         - https://docs.spring.io/spring-boot/docs/2.1.3.RELEASE/reference/htmlsingle/#howtoconfigure-hibernate-naming-strategy
+         - http://docs.jboss.org/hibernate/orm/5.4/userguide/html_single/Hibernate_User_Guide.html#naming
+     
+       - 하이버네이트 기존 구현: 엔티티의 필드명을 그대로 테이블의 컬럼명으로 사용
+     
+         - SpringPhysicalNamingStrategy
+     
+       - 스프링 부트 신규 설정 (엔티티(필드) ==> 테이블(컬럼))
+     
+         - ```tex
+           1. 카멜 케이스 언더스코어(memberPoint member_point)
+           
+           2. .(점) _(언더스코어)
+           
+           3. 대문자 소문자
+           ```
+     
+         - ![image-20230715083501342](C:\Users\USER\AppData\Roaming\Typora\typora-user-images\image-20230715083501342.png)
+     
+     - `cascade = CascadeType.ALL`
+     
+       - ```java
+         @Entity
+         @Table(name = "orders")
+         @Getter @Setter
+         public class Order {
+             @Id
+             @GeneratedValue
+             @Column(name = "order_id")
+             private Long id;
+         
+             @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+             private List<OrderItem> orderItems = new ArrayList<>(); // 컬렉션은 필드에서 초기화하자
+         
+         }
+         
+         /*
+         CascadeType.ALL 옵션을 없다면
+         기존에는 아래처럼 저장 시, 4줄의 코드를 넣었다
+         persist(orderItemA)
+         persist(orderItemB)
+         persist(orderItemC)
+         persist(order)
+         
+         하지만 CascadeType.ALL가 있다면
+         persist(order)
+         코드 한줄로 위의 코드와 똑같은 결과를 냄
+         
+         즉, cascade는 전파라고 보면 된다
+         */
+         ```
+     
+     - 연관관계 편의 메소드
+     
+       - 
 
 3. 애플리케이션 구현 준비
 

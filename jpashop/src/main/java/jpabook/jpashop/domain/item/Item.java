@@ -32,8 +32,8 @@ public abstract class Item {
     private int stockQuantity;
 
     @ManyToMany(mappedBy = "items")
-    private List<Category> categories = new ArrayList<>();
+    private List<Category> categories = new ArrayList<>(); // 컬렉션은 필드에서 초기화하자
 
     @OneToMany(mappedBy = "item")
-    private List<OrderItem> orderItems = new ArrayList<>();
+    private List<OrderItem> orderItems = new ArrayList<>(); // 컬렉션은 필드에서 초기화하자
 }
