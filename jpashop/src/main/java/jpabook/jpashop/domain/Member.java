@@ -8,7 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Getter @Setter
+@Getter
+@Setter
 public class Member {
 
     @Id
@@ -28,4 +29,12 @@ public class Member {
      */
     @OneToMany(mappedBy = "member")
     private List<Order> orders = new ArrayList<>(); // 컬렉션은 필드에서 초기화 하자.
+
+    /* 일대다 연관관계의 일측(Member)에서 연관관계를 지정할 때 기존 연관관계는 끊어주어야 한다. */
+//    public void setOrder(Order order) {
+//        this.orders.add(order);
+//        if (order.getMember() != this) {
+//            order.setMember(this);
+//        }
+//    }
 }
