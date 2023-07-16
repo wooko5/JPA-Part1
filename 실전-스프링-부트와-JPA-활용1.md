@@ -461,7 +461,57 @@
      
      - 연관관계 편의 메소드
      
-       - 
+       - 엔티티(A, B)가 양방향 연관관계일 때, 특정 엔티티(A)에서 두 엔티티의 양방향 연관관계를 설정해주는 메소드를 `연관관계 편의 메소드`라고 한다
+       
+       - 주의 사항
+       
+         - 잘못된 연관관계 설정으로 인해 무한루프에 빠지지 않도록 조심하자!!!
+         - 1대다 관계에서 1의 엔티티에서 연관관계 편의 메소드를 작성할 때, 기존 연관관계는 끊어줘야 안전하다
+       
+       - ```java
+         /* 
+         Member와 Order는 1대다 관계이다
+         즉 Order는 Member를 FK로 갖고있는 연관관계 주인 엔티티다
+         연관관계 편의 메소드는 웬만하면 연관관계 주인 엔티티에서 생성하는 것이 편하다
+         */
+         
+         @Entity
+         @Getter @Setter
+         public class Member {
+         
+             @Id
+             @GeneratedValue
+             @Column(name = "member_id")
+             private Long id;
+             
+             @OneToMany(mappedBy = "member")
+             private List<Order> orders = new ArrayList<>(); // 컬렉션은 필드에서 초기화 하자.
+         }
+         
+         
+         @Entity
+         @Table(name = "orders")
+         @Getter @Setter
+         public class Order {
+             @Id
+             @GeneratedValue
+             @Column(name = "order_id")
+             private Long id;
+         
+             // 연관관계의 주인으로 본다
+             @ManyToOne(fetch = FetchType.LAZY) // 모든 연관관계는 특별한 경우를 제외하고 지연로딩으로 설정
+             @JoinColumn(name = "member_id")
+             private Member member;
+             
+             /* 연관관계 편의 메소드 생성, 양방향 관계에서 주인쪽(FK소유)에 메소드를 만들어주는게 좋다*/
+             public void setMember(Member member){
+                 this.member = member;
+                 member.getOrders().add(this);
+             }
+         }
+         ```
+       
+         
 
 3. 애플리케이션 구현 준비
 
