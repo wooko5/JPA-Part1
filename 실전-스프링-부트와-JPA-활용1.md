@@ -428,6 +428,11 @@
      
      - `cascade = CascadeType.ALL`
      
+       - 개념
+         - cascade 옵션이란 Entity의 상태 변화를 전파시키는 옵션이다
+         - @OneToMany 나 @ManyToOne에 옵션으로 줄 수 있음
+         - 예를 들어, 두 엔티티 Order, OrderItem이 존재하고 일대다의 양방향 연관관계일 때, Order 엔티티를 persist() 할 때 OrderItem 엔티티도 연쇄해서 영속화할 때 사용한다
+     
        - ```java
          @Entity
          @Table(name = "orders")
@@ -438,26 +443,52 @@
              @Column(name = "order_id")
              private Long id;
          
-             @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
-             private List<OrderItem> orderItems = new ArrayList<>(); // 컬렉션은 필드에서 초기화하자
-         
+             @OneToMany(mappedBy = "order", cascade = CascadeType.ALL) // 영속성 전이 옵션 추가
+             private List<OrderItem> orderItems = new ArrayList<>();
+             
+             public void addOrderItem(OrderItem orderItem){
+                 orderItems.add(orderItem);
+                 orderItem.setOrder(this);
+             }
          }
          
-         /*
-         CascadeType.ALL 옵션을 없다면
-         기존에는 아래처럼 저장 시, 4줄의 코드를 넣었다
-         persist(orderItemA)
-         persist(orderItemB)
-         persist(orderItemC)
-         persist(order)
+         @Entity
+         @Getter @Setter
+         public class OrderItem {
          
-         하지만 CascadeType.ALL가 있다면
-         persist(order)
-         코드 한줄로 위의 코드와 똑같은 결과를 냄
+             @Id
+             @GeneratedValue
+             @Column(name = "order_item_id")
+             private Long id;
+             
+             @ManyToOne(fetch = FetchType.LAZY) // 모든 연관관계는 지연로딩으로 설정
+             @JoinColumn(name = "order_id")
+             private Order order;
          
-         즉, cascade는 전파라고 보면 된다
-         */
+             private int orderPrice; // 주문 가격
+             private int count; // 주문 수량
+         }
+         
+         public Class Test{
+             public static void main(String[] args) {
+                 Order order = new Order();
+                 OrderItem OrderItemA = new OrderItem();
+                 OrderItem OrderItemB = new OrderItem();
+                 order.addOrderItem(OrderItemA);
+                 order.addOrderItem(OrderItemB);
+                 
+                 /* CascadeType.ALL 옵션을 없다면, 기존에는 아래처럼 저장할 때 3줄의 코드를 넣었다. */
+                 entityManager.persist(order);
+                 entityManager.persist(OrderItemA);
+                 entityManager.persist(OrderItemB);
+                 
+                 /* 하지만 CascadeType.ALL 옵션이 있다면, 1줄로 '영속성 전이'를 할 수 있다. */
+                 entityManager.persist(order);
+             }
+         }
          ```
+         
+       - https://hongchangsub.com/jpa-cascade-2/
      
      - 연관관계 편의 메소드
      
@@ -522,6 +553,46 @@
          
 
 3. 애플리케이션 구현 준비
+
+   - 구현 요구사항
+
+     - 예제를 단순화 하기 위해 다음 기능은 구현 X
+       - 로그인과 권한 관리X
+       - 파라미터 검증과 예외 처리X
+       - 상품은 도서만 사용
+       - 카테고리는 사용X
+       - 배송 정보는 사용X
+
+   - 애플리케이션 아키텍쳐
+
+     - 아키텍쳐
+       - ![image-20230717234207409](C:\Users\USER\AppData\Roaming\Typora\typora-user-images\image-20230717234207409.png)
+
+     - 계층형 구조
+
+       - ```markdown
+         controller, web: 웹계층
+         
+         service: 비즈니스 로직, 트랜잭션 처리
+         
+         repository: JPA를 직접 사용하는 계층, 엔티티 매니저 사용
+         
+         domain: 엔티티가 모여 있는 계층, 모든 계층에서 사용
+         ```
+
+     - 패키지 구조(jpabook.jpashop)
+
+       - domain
+       - exception
+       - repository
+       - service
+       - web
+
+     - 개발 순서
+
+       - 서비스와 리포지토리 계층을 먼저 개발하고 (1)
+       - 이후에 테스트 케이스를 작성해서 검증하고 (2)
+       - 마지막에 웹 계층을 적용한다 (3)
 
 4. 회원 도메인 개발
 
