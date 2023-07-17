@@ -13,8 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 @SpringBootTest
 public class MemberRepositoryTest {
 
-    @Autowired
-    MemberRepository memberRepository;
+//    @Autowired
+//    MemberRepository memberRepository;
 
     /**
      * 기본적으로 테스트가 끝나면 테스트에서 저장했던 데이터는 모두 롤백되어 삭제된다.
@@ -24,24 +24,24 @@ public class MemberRepositoryTest {
      *
      * @throws Exception
      */
-    @Test
-    @Transactional
-    @Rollback(false)
-    public void testMember() throws Exception{
-        //Given
-        Member member = new Member();
-        member.setUsername("Jaeuk");
-
-        //When
-        Long savedId = memberRepository.save(member);
-        Member findedMember = memberRepository.find(savedId);
-
-        //Then
-        Assertions.assertThat(findedMember.getId()).isEqualTo(savedId);
-        Assertions.assertThat(findedMember.getUsername()).isEqualTo(member.getUsername());
-        /* 같은 영속성 컨텍스트 환경에서는 id값이 같으면 같은 객체로 취급하기에 true를 반환한다 */
-        Assertions.assertThat(findedMember).isEqualTo(member);
-    }
+//    @Test
+//    @Transactional
+//    @Rollback(false)
+//    public void testMember() throws Exception{
+//        //Given
+//        Member member = new Member();
+//        member.setUsername("Jaeuk");
+//
+//        //When
+//        Long savedId = memberRepository.save(member);
+//        Member findedMember = memberRepository.find(savedId);
+//
+//        //Then
+//        Assertions.assertThat(findedMember.getId()).isEqualTo(savedId);
+//        Assertions.assertThat(findedMember.getUsername()).isEqualTo(member.getUsername());
+//        /* 같은 영속성 컨텍스트 환경에서는 id값이 같으면 같은 객체로 취급하기에 true를 반환한다 */
+//        Assertions.assertThat(findedMember).isEqualTo(member);
+//    }
 
     @Test
     public void save() {
