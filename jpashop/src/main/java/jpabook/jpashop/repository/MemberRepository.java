@@ -16,9 +16,8 @@ public class MemberRepository {
      * Spring이 EntityManager를 생성해서 의존성주입(DI)를 해준다.
      * 만약 스프링에서 DI를 해주지 않는다면 개발자가 직접 EntityManagerFactory에서
      * EntityManager를 따로 생성해서 사용해야 하기에 매우 복잡하다
-     * <p>
-     * 아래는 예시!
-     *
+     * 
+     * 예시:
      * @PersistenceUnit private EntityManagerFactory emf;
      */
     @PersistenceContext

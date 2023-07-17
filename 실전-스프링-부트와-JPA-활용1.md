@@ -597,12 +597,34 @@
 4. 회원 도메인 개발
 
    - 회원 레포지토리 개발
+
      - `@SpringBootApplication`
+
        - 해당 패키지에 있거나 하위 패키지에 있는 컴포넌트들을 자동 스캔해서 스프링 빈으로 등록해준다
+
      - JPQL과  SQL의 차이점
+
        - SQL은 테이블을 대상으로한 쿼리지만 
        - JPQL은 엔티티(객체)를 대상으로 하는 쿼리
+
+     - JPQL 예시
+
+       - ```java
+         public List<Member> findAll() {
+             return entityManager.createQuery("SELECT m FROM Member m", Member.class).getResultList();
+         }
+         
+         public List<Member> findByName(String username) {
+             return entityManager.createQuery("SELECT m FROM Member m WHERE m.name = :name", Member.class)
+                 .setParameter("name", username)
+                 .getResultList();
+         }
+         ```
+
    - 회원 서비스 개발
+
+     - 진행중
+
    - 회원 기능 테스트
 
 5. 상품 도메인 개발
