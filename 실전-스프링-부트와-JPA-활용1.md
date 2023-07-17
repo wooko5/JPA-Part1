@@ -566,7 +566,7 @@
    - 애플리케이션 아키텍쳐
 
      - 아키텍쳐
-       - ![image-20230717234207409](C:\Users\USER\AppData\Roaming\Typora\typora-user-images\image-20230717234207409.png)
+       - ![image-20230717234207409](https://github.com/wooko5/JPA-Part1/assets/58154633/42b4e8ac-97ed-405f-84c1-e3bb96b9528f)
 
      - 계층형 구조
 
