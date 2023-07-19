@@ -21,6 +21,9 @@ public class MemberRepository {
     @PersistenceContext
     private EntityManager entityManager;
 
+    /* 기존에 쓰던 위의 코드를 @RequiredArgsConstructor를 추가하면 간단하게 EntityManager를 주입할 수 있다 */
+//    private final EntityManager entityManager;
+
     public void save(Member member) {
         entityManager.persist(member);
     }

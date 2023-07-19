@@ -623,7 +623,66 @@
 
    - 회원 서비스 개발
 
-     - 
+     - @Transactional(readOnly = true)
+
+       - 트랜잭션에서 읽기 전용 서비스 로직임을 표현함으로써 JPA가 최적화된다
+
+       - DB마다 다르지만 해당 로직에 대해 단순 읽기로 처리하기 위해 리소스를 덜 쓰는 등의 최적화가 자동적으로 발생한다
+
+       - ```java
+         /* 회원 단건 조회 */
+             @Transactional(readOnly = true)
+             public Member findOne(Long id){
+                 return memberRepository.findOne(id);
+             }
+         ```
+
+       - 디폴트는 false이다.
+
+         - @Transactional(readOnly = false) == @Transactional
+
+     - @Autowired 필드주입 주의점
+
+       - ```java
+         /* 아래 두 개는 지양하자! */
+         
+         @Autowired // 필드주입
+         private MemberRepository memberRepository;
+         
+         private MemberRepository memberRepository;
+         
+         // setter 주입, 런타임 시 누군가 수정할 수 있어서 위험
+         @Autowired
+         public void setMemberRepository(MemberRepository memberRepository) {
+             this.memberRepository = memberRepository;
+         }
+         ```
+
+       - 생성자 주입 방식을 권장
+
+         - ```java
+           private final MemberRepository memberRepository;
+           
+           public MemberService(MemberRepository memberRepository) {
+               this.memberRepository = memberRepository;
+           }
+           
+           
+           
+           
+           ```
+
+         - `@RequiredArgsConstructor`을 쓰면 final로 초기화가 꼭 되어야하는 필드들만 따로 생성자 주입을 통해 파라미터로 이용하기에 개발자가 실수하지 않을 확률이 높아진다 
+
+         - ```java
+           @PersistenceContext
+           private EntityManager entityManager;
+           
+            /* 기존에 쓰던 위의 코드를 @RequiredArgsConstructor를 추가하면 간단하게 EntityManager를 주입할 수 있다 */
+           private final EntityManager entityManager;
+           ```
+
+         - 원래는 `@PersistenceContext`를 선언해야 `EntityManager`를 쓸 수 있는데 Spring Data JPA가 지원해줘서 생성자 주입만으로도 쓸 수 있는 것, 추후에는 스프링 기본 라이브러리에서도 가능하게 추가될 예정이라고 한다
 
    - 회원 기능 테스트
 
