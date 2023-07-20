@@ -819,7 +819,7 @@
 
        - [H2경로](https://h2database.com/html/main.html)에 들어가서 [Cheat Sheet](https://h2database.com/html/cheatSheet.html)을 누르고 해당 경로를 가져온다
 
-       - ![image-20230721021906101](C:\Users\USER\AppData\Roaming\Typora\typora-user-images\image-20230721021906101.png)
+       - ![image-20230721021906101](https://github.com/wooko5/JPA-Part1/assets/58154633/be897e6f-5b83-40b6-967d-221da03a3ba1)
 
        - ```yaml
          spring:
@@ -845,7 +845,7 @@
 
        - 기본적으로 설정이 없다면 인메모리로 돌리는게 디폴트이기 때문에 설정 안 해줘도 돌아간다(심지어 yml 파일없어도 돌아감)
 
-       - ![image-20230721022101826](C:\Users\USER\AppData\Roaming\Typora\typora-user-images\image-20230721022101826.png)
+       - ![image-20230721022101826](https://github.com/wooko5/JPA-Part1/assets/58154633/e4687ffb-9801-4888-a687-23cbed2c545c)
 
 5. 상품 도메인 개발
 
