@@ -671,9 +671,9 @@
      - `@RequiredArgsConstructor`을 쓰면 final로 초기화가 꼭 되어야하는 필드들만 따로 생성자 주입을 통해 파라미터로 이용하기에 개발자가 실수하지 않을 확률이 높아진다 
      
        - ```java
-      @PersistenceContext
+        @PersistenceContext
          private EntityManager entityManager;
-      
+         
           /* 기존에 쓰던 위의 코드를 @RequiredArgsConstructor를 추가하면 간단하게 EntityManager를 주입할 수 있다 */
          private final EntityManager entityManager;
          ```
@@ -681,6 +681,171 @@
        - 원래는 `@PersistenceContext`를 선언해야 `EntityManager`를 쓸 수 있는데 Spring Data JPA가 지원해줘서 생성자 주입만으로도 쓸 수 있는 것, 추후에는 스프링 기본 라이브러리에서도 가능하게 추가될 예정이라고 한다
      
    - 회원 기능 테스트
+
+     - 테스트 요구사항
+
+       - 회원 가입을 성공해야 한다
+       - 회원 가입할 때, 같은 이름이 있으면 예외처리를 한다
+
+     - 기술설명
+
+       - ```markdown
+         @RunWith(SpringRunner.class): 스프링과 테스트 통합
+         
+         @SpringBootTest: 스프링 부트 띄우고 테스트(이게 없으면 @Autowired 다 실패)
+         
+         @Transactional: 반복 가능한 테스트 지원, 각각의 테스트를 실행할 때마다 트랜잭션을 시작하고 테스트
+         가 끝나면 트랜잭션을 강제로 롤백 (이 어노테이션이 테스트 케이스에서 사용될 때만 롤백)
+         ```
+
+         
+
+     - JPA 실행 시, 저장 테스트에서 로그에 INSERT문이 안 나오는 이유
+
+       - ```java
+         @RunWith(SpringRunner.class)
+         @SpringBootTest
+         @Transactional
+         public class MemberServiceTest {
+         
+             @Autowired
+             private MemberRepository memberRepository;
+         
+             @Autowired
+             private MemberService memberService;
+         
+             @Test
+             @Rollback(false)
+             public void 회원가입() throws Exception{
+                 //given
+                 Member member = new Member();
+                 member.setName("Jaeuk");
+         
+                 /**
+                  * 실행 로그를 보면 저장테스트인데 DB에 INSERT문을 실행하지 않는다.
+                  * 그 이유는 기본적으로 JPA에서 em.persist(member)를 한다해서 DB에 INSERT문을 실행하는게 아니기 때문이다
+                  * 영속성 컨텍스트에 저장된 객체 데이터가 commit, flush가 실행되면 INSERT문을 생성하면서 DB에 전달되는 구조이기 때문이다
+                  *
+                  * commit, flush가 실행 안 되는 이유: @Transactional가 rollback이 기본적으로 true이기 때문이다
+                  * 그래서 해당 메소드에 @Rollback(false)로 두면 insert문이 실행된다
+                  */
+                 Long savedId = memberService.join(member); //when
+         
+                 //then
+                 Assertions.assertEquals(member, memberRepository.findOne(savedId));
+             }
+         }
+         ```
+
+       - ```java
+         @RunWith(SpringRunner.class)
+         @SpringBootTest
+         @Transactional
+         public class MemberServiceTest {
+         
+             @Autowired
+             private MemberRepository memberRepository;
+         
+             @Autowired
+             private MemberService memberService;
+             
+             @Autowired
+             private EntityManager entityManager; // 새로추가됨
+         
+             @Test
+             public void 회원가입() throws Exception{
+                 //given
+                 Member member = new Member();
+                 member.setName("Jaeuk");
+                 
+                 //when
+                 Long savedId = memberService.join(member); 
+                 
+                 // @Rollback(false)을 쓰지않고 DB에 INSERT문을 넣고 싶다면 flush()을 추가하자
+                 entityManager.flush();
+         
+                 //then
+                 Assertions.assertEquals(member, memberRepository.findOne(savedId));
+             }
+         }
+         ```
+
+     - 중복회원_예외 테스트
+
+       - ```java
+         @Test
+             public void 중복_회원_예외() throws Exception {
+                 //given
+                 Member memberA = new Member();
+                 memberA.setName("Oh");
+         
+                 Member memberB = new Member();
+                 memberB.setName("Oh");
+         
+                 //when
+                 memberService.join(memberA);
+                 try {
+                     memberService.join(memberB);
+                 } catch (IllegalStateException e) {
+                     return;
+                 }
+         
+                 //then
+                 fail("예외가 발생해야한다!!!");
+         }
+         
+         /*=========아래는 개선된 코드 ========*/
+         @Test(expected = IllegalStateException.class)
+             public void 중복_회원_예외() throws Exception {
+                 //given
+                 Member memberA = new Member();
+                 memberA.setName("Oh");
+         
+                 Member memberB = new Member();
+                 memberB.setName("Oh");
+         
+                 //when
+                 memberService.join(memberA);
+                 memberService.join(memberB);
+         
+                 //then
+                 fail("예외가 발생해야한다!!!");
+         }
+         ```
+
+     - 테스트 케이스를 위한 설정
+
+       - test폴더에 resources 폴더를 만들고, application.yml을 새로 생성해서 기존의 application.yml과 다른 설정을 해주면 테스트 시에만 쓰는 환경이 만들어진다
+
+       - [H2경로](https://h2database.com/html/main.html)에 들어가서 [Cheat Sheet](https://h2database.com/html/cheatSheet.html)을 누르고 해당 경로를 가져온다
+
+       - ![image-20230721021906101](C:\Users\USER\AppData\Roaming\Typora\typora-user-images\image-20230721021906101.png)
+
+       - ```yaml
+         spring:
+           datasource:
+             url: jdbc:h2:mem:test # url 경로를 in-memory 환경으로 변경했다
+             username: sa
+             password:
+             driver-class-name: org.h2.Driver
+         
+           jpa:
+             hibernate:
+               ddl-auto: create-drop # create는 기존에 있던 엔티티를 다 날리고 시작, create-drop은 시작은 같지만 마지막에 모든 엔티티를 날려버림
+             properties:
+               hibernate:
+         #        show_sql: true
+                 format_sql: true
+         
+         logging:
+           level:
+             org.hibernate.SQL: debug
+             org.hibernate.type: trace
+         ```
+
+       - 기본적으로 설정이 없다면 인메모리로 돌리는게 디폴트이기 때문에 설정 안 해줘도 돌아간다(심지어 yml 파일없어도 돌아감)
+
+       - ![image-20230721022101826](C:\Users\USER\AppData\Roaming\Typora\typora-user-images\image-20230721022101826.png)
 
 5. 상품 도메인 개발
 
