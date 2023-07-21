@@ -2,6 +2,7 @@ package jpabook.jpashop.domain.item;
 
 import jpabook.jpashop.domain.Category;
 import jpabook.jpashop.domain.OrderItem;
+import jpabook.jpashop.exception.NotEnoughStockException;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -17,7 +18,8 @@ import java.util.List;
  */
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@Getter @Setter
+@Getter
+@Setter
 public abstract class Item {
 
     @Id
@@ -36,4 +38,18 @@ public abstract class Item {
 
     @OneToMany(mappedBy = "item")
     private List<OrderItem> orderItems = new ArrayList<>(); // 컬렉션은 필드에서 초기화하자
+
+    /* 비즈니스 로직 - 상품 등록(상품 재고 추가) */
+    public void addStock(int quantity) {
+        this.stockQuantity += quantity;
+    }
+
+    /* 비즈니스 로직 - 상품 수정(상품 재고 감소) */
+    public void removeStock(int quantity) {
+        int stock = this.stockQuantity - quantity;
+        if (stock < 0) {
+            throw new NotEnoughStockException("Not Enough Energy(stock quantity)");
+        }
+        this.stockQuantity = stock;
+    }
 }
