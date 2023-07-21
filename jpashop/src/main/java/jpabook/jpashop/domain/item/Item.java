@@ -39,12 +39,12 @@ public abstract class Item {
     @OneToMany(mappedBy = "item")
     private List<OrderItem> orderItems = new ArrayList<>(); // 컬렉션은 필드에서 초기화하자
 
-    /* 비즈니스 로직 - 상품 등록(상품 재고 추가) */
+    /* 비즈니스 로직 - 상품 재고 추가 */
     public void addStock(int quantity) {
         this.stockQuantity += quantity;
     }
 
-    /* 비즈니스 로직 - 상품 수정(상품 재고 감소) */
+    /* 비즈니스 로직 - 상품 재고 감소 */
     public void removeStock(int quantity) {
         int stock = this.stockQuantity - quantity;
         if (stock < 0) {
