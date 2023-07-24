@@ -70,8 +70,6 @@
 
    - 라이브러리 살펴보기
 
-     - 여기까지 했음
-
    - View 환경 설정
 
      - HelloController
@@ -102,7 +100,7 @@
      
      - index.html은 static 폴더에 만들기
      
-     - `꿀팁`
+     - Recompile TIP
      
        - ```
          html을 수정하고 서버를 켰다 껐다하는게 굉장히 귀찮기 때문에 이걸 없앨 방법이 존재함
@@ -113,7 +111,7 @@
          ```
      
        - ![image-20230710231610759](https://github.com/wooko5/JPA-Part1/assets/58154633/cd82c849-6cc0-4dd8-8606-002d8527c2c8)
-
+   
    - H2 설정
 
      - 팁
@@ -123,7 +121,7 @@
        - ![image-20230711225117511](https://github.com/wooko5/JPA-Part1/assets/58154633/e64f3145-6825-4f28-92b6-f22e3242d278)
          - 특정 파일(/jpashop.mv.db) 생성된걸 확인하고
        - ![image-20230711230057044](https://github.com/wooko5/JPA-Part1/assets/58154633/2b89118f-c59b-469f-bc28-5c025360f6b8)
-
+   
    - JPA와 DB 설정 동작확인
 
      - application.yml 파일 설정
@@ -155,7 +153,7 @@
        - 애플리케이션 실행 시점에 테이블을 drop 하고, 다시 생성
      
      - 오류
-
+   
        - @Test에 Tractional 설정을 해주지 않았기 때문에 발생
        - ![image-20230711234321963](https://github.com/wooko5/JPA-Part1/assets/58154633/ebdff382-84a5-4425-8d05-59450c411d2e)
        - javax와 spring 중에서 spring 껄로 `@Transactional`을 추가
@@ -163,7 +161,7 @@
      - localhost:8082로 h2에 접속가능
      
        - ![image-20230711234623738](https://github.com/wooko5/JPA-Part1/assets/58154633/8e7694a4-0ed6-4cb1-8869-7565a16b8df2)
-
+   
      - 빌드
 
        - ```groovy
@@ -173,7 +171,7 @@
          
          java -jar jpashop-0.0.1-SNAPSHOT.jar
          ```
-
+   
      - TIP - 쿼리 파라미터 남기기
      
        - ```yaml
@@ -217,7 +215,7 @@
      - **개발할 때 로그를 많이 남기는건 좋은 습관이지만 운영환경에서 로그를 많이 남기면 성능에 좋지 않기 때문에 항상 운영에서는 해당 로그가 성능이나 보안에 영향을 끼치는지 확인하고 설계해야한다**
      
        
-
+   
 2. 도메인 분석 설계(요구사항 분석)
 
    - 요구사항 분석
