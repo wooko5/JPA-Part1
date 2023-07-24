@@ -5,6 +5,8 @@ import jpabook.jpashop.repository.MemberRepository;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
@@ -20,6 +22,8 @@ import static org.springframework.test.util.AssertionErrors.fail;
 @SpringBootTest
 @Transactional
 public class MemberServiceTest {
+
+    private Logger log = LoggerFactory.getLogger(getClass());
 
     @Autowired
     private MemberRepository memberRepository;
@@ -74,6 +78,18 @@ public class MemberServiceTest {
 
         //then
         fail("예외가 발생해야한다!!!");
+    }
+
+    @Test
+    public void 원본_컬렉션과_하이버네이트_컬렉션_확인(){
+        Member member = new Member();
+        log.info("====================START=====================");
+        log.info("member = {}", member.getOrders().getClass());
+        log.info("====================END=====================");
+        entityManager.persist(member);
+        log.info("====================START=====================");
+        log.info("member = {}", member.getOrders().getClass());
+        log.info("====================END=====================");
     }
 
 

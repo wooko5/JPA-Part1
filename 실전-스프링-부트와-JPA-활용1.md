@@ -385,9 +385,13 @@
          
          만약 getOrders() 처럼 임의의 메서드에서 컬력션을 잘못 생성하면 하이버네이트 내부 메커니즘에 문제가 발생할 수 있다. 
          
+         Hibernate는 컬렉션을 효율적으로 관리하기 위해 엔티티를 영속 상태로 만들 때, 원본 컬렉션을 감싸고 있는 내장 컬렉션을 생성해서 내장 컬렉션을 사용하도록 참조를 변경한다.
+         
+         Hibernate가 제공하는 내장 컬렉션(PersistentBag, PersistentSet, PersistentList)은 원본 컬렉션을 감싸고 있어 래퍼 컬렉션이라고도 부른다.
+         
          따라서 필드레벨에서 생성하는 것이 가장 안전하고, 코드도 간결하다.
          ```
-     
+         
        - ```java
          Member member = new Member();
          System.out.println(member.getOrders().getClass());
