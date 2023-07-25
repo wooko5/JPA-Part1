@@ -8,9 +8,12 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import static jpabook.jpashop.domain.OrderStatus.ORDER;
+
 @Entity
 @Table(name = "orders")
-@Getter @Setter
+@Getter
+@Setter
 public class Order {
     @Id
     @GeneratedValue
@@ -35,18 +38,31 @@ public class Order {
     private OrderStatus orderStatus; // 주문상태 [ORDER, CANCLE]
 
     /* 연관관계 편의 메소드 생성, 양방향 관계에서 주인쪽(FK소유)에 메소드를 만들어주는게 좋다*/
-    public void setMember(Member member){
+    public void setMember(Member member) {
         this.member = member;
         member.getOrders().add(this);
     }
 
-    public void addOrderItem(OrderItem orderItem){
+    public void addOrderItem(OrderItem orderItem) {
         orderItems.add(orderItem);
         orderItem.setOrder(this);
     }
 
-    public void setDelivery(Delivery delivery){
+    public void setDelivery(Delivery delivery) {
         this.delivery = delivery;
         delivery.setOrder(this);
+    }
+
+    /* 생성 메서드, OrderItem...은 여러개를 의미한다 */
+    public static Order createOrder(Member member, Delivery delivery, OrderItem... orderItems) {
+        Order order = new Order();
+        order.setMember(member);
+        order.setDelivery(delivery);
+        for (OrderItem orderItem : orderItems) {
+            order.addOrderItem(orderItem);
+        }
+        order.setOrderStatus(ORDER);
+        order.setOrderDate(LocalDateTime.now());
+        return order;
     }
 }
