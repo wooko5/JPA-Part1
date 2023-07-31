@@ -887,13 +887,88 @@
          주문 취소
          ```
 
-     - Order 엔티티에 비즈니스 로직 생성
+     - Order 비즈니스 로직 생성
 
-       - ㅇㅇ
+       - createOrder
 
-     - OrderItem 엔티티에 비즈니스 로직 생성
+         - ```java
+           /* 비즈니스 로직 - 생성 메서드, OrderItem...은 여러개를 의미한다 */
+           public static Order createOrder(Member member, Delivery delivery, OrderItem... orderItems) {
+               Order order = new Order();
+               order.setMember(member);
+               order.setDelivery(delivery);
+               for (OrderItem orderItem : orderItems) {
+                   order.addOrderItem(orderItem);
+               }
+               order.setOrderStatus(ORDER);
+               order.setOrderDate(LocalDateTime.now());
+               return order;
+           }
+           ```
 
-       - 
+       - cancle
+
+         - ```java
+           /* 비즈니스 로직 - 주문취소 메서드 */
+           public void cancle() {
+               if (delivery.getDeliveryStatus() == DeliveryStatus.COMPLETED) {
+                   throw new IllegalStateException("이미 배송완료된 상품은 취소가 불가능합니다.");
+               }
+               this.setOrderStatus(CANCLE);
+               /**
+               * this.orderItems로 써도 되지만 생략하는 이유:
+               * 이미 IDE에서 해당 orderItems로만 써도 보라색으로 색칠하기 때문에 식별하기 쉬워서 굳이 this.orderItems로 쓰지 않았다.
+               * 개인 취향의 문제이지만 주로 1.강조하고 싶을 때, 2.변수 이름이 중복될 때를 제외하고는 잘 안 쓴다.
+               */
+               for (OrderItem orderItem : orderItems) {
+                   orderItem.cancel(); // orderItem의 재고 수량을 원복하는 메소드 처리
+               }
+           }
+           ```
+
+       - getTotalPrice
+
+         - ```java
+           /* 조회 로직 - 전체 주문 가격을 조회하는 메서드 */
+           public int getTotalPrice() {
+               int totalPrice = 0;
+               for (OrderItem orderItem : orderItems) {
+                   totalPrice += orderItem.getTotalPrice();
+               }
+               return totalPrice;
+               /* stream 방식으로 하는 방법도 존재 
+               return orderItems.stream()
+                   .mapToInt(OrderItem::getTotalPrice)
+                   .sum();
+                */
+           }
+           ```
+
+     - OrderItem 비즈니스 로직 생성
+
+       - ```java
+         /* 생성 메서드 */
+         public static OrderItem createOrderItem(Item item, int orderPrice, int count) {
+             OrderItem orderItem = new OrderItem();
+             orderItem.setItem(item);
+             orderItem.setOrderPrice(orderPrice);
+             orderItem.setCount(count);
+             item.removeStock(count); // 넘어온 count만큼 item에서 재고(stockQuantity)를 제거해줌
+             return orderItem;
+         }
+         
+         /* 비즈니스 로직 - 재고 수량을 원복해주는 메서드 */
+         public void cancel() {
+             getItem().addStock(count); // this.getItem().addStock(count);으로 작성할 수 있지만 헷갈릴 getter가 없어서 간단하게 작성
+         }
+         
+         /* 비즈니스 로직 - 주문의 전체 가격을 반환하는 메서드 */
+         public int getTotalPrice() {
+             return getOrderPrice() * getCount(); // 주문가격 * 수량 == 주문 전체 가격
+         }
+         ```
+
+         
 
    - 주문 레포지토리 개발
 

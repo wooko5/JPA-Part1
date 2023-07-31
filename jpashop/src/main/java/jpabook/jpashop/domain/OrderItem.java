@@ -45,6 +45,6 @@ public class OrderItem {
 
     /* 비즈니스 로직 - 주문의 전체 가격을 반환하는 메서드 */
     public int getTotalPrice() {
-        return getOrderPrice() * getCount();
+        return getOrderPrice() * getCount(); // 주문가격 * 수량 == 주문 전체 가격
     }
 }
