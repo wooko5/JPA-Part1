@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static jpabook.jpashop.domain.OrderStatus.ORDER;
+import static jpabook.jpashop.domain.OrderStatus.CANCLE;
 
 @Entity
 @Table(name = "orders")
@@ -53,7 +54,7 @@ public class Order {
         delivery.setOrder(this);
     }
 
-    /* 생성 메서드, OrderItem...은 여러개를 의미한다 */
+    /* 비즈니스 로직 - 생성 메서드, OrderItem...은 여러개를 의미한다 */
     public static Order createOrder(Member member, Delivery delivery, OrderItem... orderItems) {
         Order order = new Order();
         order.setMember(member);
@@ -64,5 +65,34 @@ public class Order {
         order.setOrderStatus(ORDER);
         order.setOrderDate(LocalDateTime.now());
         return order;
+    }
+
+    /* 비즈니스 로직 - 주문취소 메서드 */
+    public void cancle() {
+        if (delivery.getDeliveryStatus() == DeliveryStatus.COMPLETED) {
+            throw new IllegalStateException("이미 배송완료된 상품은 취소가 불가능합니다.");
+        }
+        this.setOrderStatus(CANCLE);
+        /**
+         * this.orderItems로 써도 되지만 생략하는 이유:
+         * 이미 IDE에서 해당 orderItems로만 써도 보라색으로 색칠하기 때문에 식별하기 쉬워서 굳이 this.orderItems로 쓰지 않았다.
+         * 개인 취향의 문제이지만 주로 1.강조하고 싶을 때, 2.변수 이름이 중복될 때를 제외하고는 잘 안 쓴다.
+         */
+        for (OrderItem orderItem : orderItems) {
+            orderItem.cancel(); // orderItem의 재고 수량을 원복하는 메소드 처리
+        }
+    }
+
+    /* 조회 로직 - 전체 주문 가격을 조회하는 메서드 */
+    public int getTotalPrice() {
+        int totalPrice = 0;
+        for (OrderItem orderItem : orderItems) {
+            totalPrice += orderItem.getTotalPrice();
+        }
+        return totalPrice;
+//        /* stream 방식으로 하는 방법도 존재 */
+//        return orderItems.stream()
+//                .mapToInt(OrderItem::getTotalPrice)
+//                .sum();
     }
 }
