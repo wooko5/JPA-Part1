@@ -1,6 +1,7 @@
 package jpabook.jpashop.service;
 
 import jpabook.jpashop.domain.Member;
+import jpabook.jpashop.domain.Order;
 import jpabook.jpashop.repository.MemberRepository;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
@@ -14,6 +15,9 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.springframework.test.util.AssertionErrors.assertEquals;
 import static org.springframework.test.util.AssertionErrors.fail;
@@ -81,7 +85,7 @@ public class MemberServiceTest {
     }
 
     @Test
-    public void 원본_컬렉션과_하이버네이트_컬렉션_확인(){
+    public void 원본_컬렉션과_하이버네이트_컬렉션_확인() {
         Member member = new Member();
         log.info("====================START=====================");
         log.info("member = {}", member.getOrders().getClass());
@@ -90,6 +94,20 @@ public class MemberServiceTest {
         log.info("====================START=====================");
         log.info("member = {}", member.getOrders().getClass());
         log.info("====================END=====================");
+    }
+
+    @Test
+    public void 엔_플러스_1_문제_테스트() {
+        Member member1 = new Member();
+        Member member2 = new Member();
+        Member member3 = new Member();
+
+        List<Order> orderList = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            orderList.add(new Order());
+        }
+
+        /* TODO: OrderRepository를 만들어서 save() 메소드 생성하기 */
     }
 
 
