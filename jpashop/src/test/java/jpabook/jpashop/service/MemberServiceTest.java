@@ -3,6 +3,7 @@ package jpabook.jpashop.service;
 import jpabook.jpashop.domain.Member;
 import jpabook.jpashop.domain.Order;
 import jpabook.jpashop.repository.MemberRepository;
+import jpabook.jpashop.repository.OrderRepository;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 import org.junit.runner.RunWith;
@@ -31,6 +32,9 @@ public class MemberServiceTest {
 
     @Autowired
     private MemberRepository memberRepository;
+
+    @Autowired
+    private OrderRepository orderRepository;
 
     @Autowired
     private MemberService memberService;
@@ -106,8 +110,18 @@ public class MemberServiceTest {
         for (int i = 0; i < 10; i++) {
             orderList.add(new Order());
         }
+        orderRepository.saveAll(orderList);
 
-        /* TODO: OrderRepository를 만들어서 save() 메소드 생성하기 */
+        member1.setOrders(orderList);
+        member2.setOrders(orderList);
+        member3.setOrders(orderList);
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+        memberRepository.save(member3);
+
+        System.out.println("-----------------------------------------------");
+        List<Member> memberList = memberRepository.findAll();
+        log.info("memberList ===== {}", memberList);
     }
 
 
