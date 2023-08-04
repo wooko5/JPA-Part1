@@ -27,7 +27,8 @@ public class OrderRepository {
         }
     }
 
-//    public List<Order> findAll(){
-//        return entityManager.createQuery("SELECT m FROM Order m").getResultList();
-//    }
+    /* N+1 테스트용으로 잠시 해둠 */
+    public List<Order> findAll(){
+        return entityManager.createQuery("SELECT m FROM Order m").getResultList();
+    }
 }
