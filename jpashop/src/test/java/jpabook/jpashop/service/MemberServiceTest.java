@@ -2,6 +2,7 @@ package jpabook.jpashop.service;
 
 import jpabook.jpashop.domain.Member;
 import jpabook.jpashop.domain.Order;
+import jpabook.jpashop.domain.OrderStatus;
 import jpabook.jpashop.repository.MemberRepository;
 import jpabook.jpashop.repository.OrderRepository;
 import org.junit.Test;
@@ -11,16 +12,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
-
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-import static org.springframework.test.util.AssertionErrors.assertEquals;
 import static org.springframework.test.util.AssertionErrors.fail;
 
 @RunWith(SpringRunner.class)
@@ -105,23 +104,35 @@ public class MemberServiceTest {
         Member member1 = new Member();
         Member member2 = new Member();
         Member member3 = new Member();
+        member1.setName("root1");
+        member2.setName("root2");
+        member3.setName("root3");
+        memberService.join(member1);
+        memberService.join(member2);
+        memberService.join(member3);
 
-        List<Order> orderList = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
-            orderList.add(new Order());
-        }
-        orderRepository.saveAll(orderList);
+        Order order1 = new Order();
+        Order order2 = new Order();
+        Order order3 = new Order();
+        order1.setOrderStatus(OrderStatus.ORDER);
+        order2.setOrderStatus(OrderStatus.ORDER);
+        order3.setOrderStatus(OrderStatus.ORDER);
+        List<Order> orderList = new ArrayList<>(Arrays.asList(order1, order2, order3));
+
+        orderRepository.save(order1);
+        orderRepository.save(order2);
+        orderRepository.save(order3);
 
         member1.setOrders(orderList);
         member2.setOrders(orderList);
         member3.setOrders(orderList);
-        memberRepository.save(member1);
-        memberRepository.save(member2);
-        memberRepository.save(member3);
 
-        System.out.println("-----------------------------------------------");
+        entityManager.flush();
+
         List<Member> memberList = memberRepository.findAll();
-        log.info("memberList ===== {}", memberList);
+        System.out.println("==========================================================");
+        System.out.println("잔체 문서 데이터는 몇 개 일까 === " + memberList.size());
+        System.out.println("==========================================================");
     }
 
 
