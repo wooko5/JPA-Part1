@@ -1,7 +1,9 @@
 package jpabook.jpashop.domain;
 
 import jpabook.jpashop.domain.item.Item;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
@@ -9,6 +11,7 @@ import javax.persistence.*;
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class OrderItem {
 
     @Id
@@ -28,7 +31,15 @@ public class OrderItem {
 
     private int count; // 주문 수량
 
-    /* 생성 메서드 */
+//    protected OrderItem(){
+//        /*
+//        OrderItem의 인스턴스를 생성할 때 '주문상품 생성 메서드'을 강제하게 위해서 만든 생성자
+//        protected로 하면 'OrderItem orderItem = new OrderItem()'을 못 쓴다.
+//        @NoArgsConstructor(access = AccessLevel.PROTECTED)와 같은 코드다.
+//        */
+//    }
+
+    /* 주문상품 생성 메서드 */
     public static OrderItem createOrderItem(Item item, int orderPrice, int count) {
         OrderItem orderItem = new OrderItem();
         orderItem.setItem(item);
