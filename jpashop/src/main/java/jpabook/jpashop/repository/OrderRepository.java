@@ -1,17 +1,17 @@
 package jpabook.jpashop.repository;
 
 import jpabook.jpashop.domain.Order;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import java.util.List;
 
+@RequiredArgsConstructor
 @Repository
 public class OrderRepository {
 
-    @PersistenceContext
-    private EntityManager entityManager;
+    private final EntityManager entityManager;
 
     public void save(Order order) {
         entityManager.persist(order);
