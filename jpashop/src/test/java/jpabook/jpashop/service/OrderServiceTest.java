@@ -38,17 +38,17 @@ public class OrderServiceTest {
     public void 상품주문() throws Exception {
         //given
         Member member = createMember();
-        Item book = createBook("반지의제왕", 10000, 10);
+        Item book = createBook("반지의제왕", 40000, 10);
         int orderCount = 2;
 
         //when
         Long orderId = orderService.order(member.getId(), book.getId(), orderCount);
 
         //then
-        Order getOrder = orderRepository.findOne(orderId);
-        assertEquals("상품 주문시 상태는 ORDER", OrderStatus.ORDER, getOrder.getOrderStatus()); // (메시지, 예상값, 실제값)
-        assertEquals("주문한 상품 종류 수가 정확해야 한다.", 1, getOrder.getOrderItems().size());
-        assertEquals("주문 가격은 가격 * 수량이다", 10000 * orderCount, getOrder.getTotalPrice());
+        Order foundOrder = orderRepository.findOne(orderId);
+        assertEquals("상품 주문시 상태는 ORDER", OrderStatus.ORDER, foundOrder.getOrderStatus()); // (메시지, 예상값, 실제값)
+        assertEquals("주문한 상품 종류 수가 정확해야 한다.", 1, foundOrder.getOrderItems().size());
+        assertEquals("주문 가격은 가격 * 수량이다", 40000 * orderCount, foundOrder.getTotalPrice());
         assertEquals("주문 수량만큼 재고가 줄어야한다", 8, book.getStockQuantity()); // 10개 책 상품 중에 2개를 구매해서 8개 재고
     }
 
@@ -56,7 +56,7 @@ public class OrderServiceTest {
     public void 상품주문_재고수량초과() throws Exception {
         //given
         Member member = createMember();
-        Item book = createBook("반지의제왕", 10000, 10);
+        Item book = createBook("반지의제왕", 40000, 10);
         int orderCount = 20;
 
         //when
@@ -71,7 +71,7 @@ public class OrderServiceTest {
     public void 주문취소() throws Exception {
         //given
         Member member = createMember();
-        Item book = createBook("반지의제왕", 10000, 10);
+        Item book = createBook("반지의제왕", 40000, 10);
         int orderCount = 2;
         Long orderId = orderService.order(member.getId(), book.getId(), orderCount);
 
@@ -79,8 +79,8 @@ public class OrderServiceTest {
         orderService.cancleOrder(orderId);
 
         //then
-        Order getOrder = orderRepository.findOne(orderId);
-        assertEquals("주문 취소 시 상태는 CANCLE이다.", OrderStatus.CANCLE, getOrder.getOrderStatus());
+        Order foundOrder = orderRepository.findOne(orderId);
+        assertEquals("주문 취소 시 상태는 CANCLE이다.", OrderStatus.CANCLE, foundOrder.getOrderStatus());
         assertEquals("주문이 취소된 상품은 그만큼 재고가 증가해야한다.", 10, book.getStockQuantity());
     }
 
