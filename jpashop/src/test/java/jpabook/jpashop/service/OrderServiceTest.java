@@ -84,6 +84,13 @@ public class OrderServiceTest {
         assertEquals("주문이 취소된 상품은 그만큼 재고가 증가해야한다.", 10, book.getStockQuantity());
     }
 
+    @Test
+    public void 스트링빌더_테스트(){
+        StringBuilder query = new StringBuilder("SELECT o FROM Order o join o.member m");
+        query.append(" + 1");
+        assertEquals(query.toString(), "SELECT o FROM Order o join o.member m + 1"); // toString()가 없으면 StringBuilder라서 테스트 실패
+    }
+
     private Item createBook(String name, int price, int stockQuantity) {
         Item book = new Book();
         book.setName(name);
