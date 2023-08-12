@@ -33,42 +33,52 @@ public class OrderRepository {
         }
     }
 
-    /* N+1 테스트용으로 잠시 해둠 */
-    public List<Order> findAll() {
-        return entityManager.createQuery("SELECT m FROM Order m").getResultList();
+    /**
+     * JPQL(동적쿼리 X)
+     */
+    public List<Order> findAll(OrderSearch orderSearch) {
+        //해당 방식으로 하면 status, name이 null일 경우 동적쿼리가 작동하지 않는다
+        return entityManager.createQuery("SELECT o FROM Order o JOIN o.member m" +
+                        " WHERE o.status = :status" +
+                        " AND m.name LIKE :name", Order.class)
+                .setParameter("status", orderSearch.getOrderStatus())
+                .setParameter("name", orderSearch.getMemberName())
+                .setMaxResults(1000) // 최대 1000건
+                .getResultList();
     }
 
+    /**
+     * JPQL(동적쿼리)
+     * 너무 길고, 복잡해서 실무에서 잘 쓰지 않는다
+     */
     public List<Order> findAllByString(OrderSearch orderSearch) {
-        //lagauage = JPQL
-        String jpql = "SELECT o FROM Order o join o.member m";
-        //TODO: jpql의 타입을 String이 아니라 StringBuilder로 변경해서 작성해보자
-//        StringBuilder query = new StringBuilder("SELECT o FROM Order o join o.member m");
+        StringBuilder jpql = new StringBuilder("SELECT o FROM Order o join o.member m");
         boolean isFirstCondition = true;
 
         //주문 상태 검색
         if (orderSearch.getOrderStatus() != null) {
             if (isFirstCondition) {
-                jpql += " where";
+                jpql.append(" WHERE");
                 isFirstCondition = false;
             } else {
-                jpql += " and";
+                jpql.append(" AND");
 
             }
-            jpql += " o.status = :status";
+            jpql.append(" o.status = :status");
         }
 
         //회원 이름 검색
         if (StringUtils.hasText(orderSearch.getMemberName())) {
             if (isFirstCondition) {
-                jpql += " where";
+                jpql.append(" WHERE");
                 isFirstCondition = false;
             } else {
-                jpql += " and";
+                jpql.append(" AND");
             }
-            jpql += " m.name like :name";
+            jpql.append(" m.name LIKE :name");
         }
 
-        TypedQuery<Order> query = entityManager.createQuery(jpql, Order.class).setMaxResults(1000); //최대 1000건
+        TypedQuery<Order> query = entityManager.createQuery(jpql.toString(), Order.class).setMaxResults(1000); //최대 1000건
 
         if (orderSearch.getOrderStatus() != null) {
             query.setParameter("status", orderSearch.getOrderStatus());
@@ -77,14 +87,13 @@ public class OrderRepository {
             query.setParameter("name", orderSearch.getMemberName());
         }
 
-        return query.getResultList(); // JPQL 쿼리를 문자로 생성하기는 번거롭고, 실수로 인한 버그가 충분히 발생할 수 있다 ==> 그래도 Criteria 방식보단 쉬운듯
+        return query.getResultList(); // JPQL 쿼리를 문자로 생성하기는 번거롭고, 실수로 인한 버그가 충분히 발생할 수 있다!!!
     }
 
     /**
-     * 진짜 드럽게 어렵네
-     *
-     * @param orderSearch
-     * @return
+     * JPA Criteria(동적쿼리)
+     * 아까보다 그나마 나은 방법이지만 QueryDSL보다는 어렵고, 실무에서 잘 쓰지 않는다.
+     * 유지/보수가 제로에 가깝다. 왜냐하면 보자마자 어떤 Query인지 감이 안 오기 때문
      */
     public List<Order> findALLByCriteria(OrderSearch orderSearch) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();

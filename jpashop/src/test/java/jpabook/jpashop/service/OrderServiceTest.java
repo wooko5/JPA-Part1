@@ -46,7 +46,7 @@ public class OrderServiceTest {
 
         //then
         Order foundOrder = orderRepository.findOne(orderId);
-        assertEquals("상품 주문시 상태는 ORDER", OrderStatus.ORDER, foundOrder.getOrderStatus()); // (메시지, 예상값, 실제값)
+        assertEquals("상품 주문시 상태는 ORDER", OrderStatus.ORDER, foundOrder.getStatus()); // (메시지, 예상값, 실제값)
         assertEquals("주문한 상품 종류 수가 정확해야 한다.", 1, foundOrder.getOrderItems().size());
         assertEquals("주문 가격은 가격 * 수량이다", 40000 * orderCount, foundOrder.getTotalPrice());
         assertEquals("주문 수량만큼 재고가 줄어야한다", 8, book.getStockQuantity()); // 10개 책 상품 중에 2개를 구매해서 8개 재고
@@ -80,7 +80,7 @@ public class OrderServiceTest {
 
         //then
         Order foundOrder = orderRepository.findOne(orderId);
-        assertEquals("주문 취소 시 상태는 CANCLE이다.", OrderStatus.CANCLE, foundOrder.getOrderStatus());
+        assertEquals("주문 취소 시 상태는 CANCLE이다.", OrderStatus.CANCLE, foundOrder.getStatus());
         assertEquals("주문이 취소된 상품은 그만큼 재고가 증가해야한다.", 10, book.getStockQuantity());
     }
 

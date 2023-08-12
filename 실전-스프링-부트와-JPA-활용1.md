@@ -1006,6 +1006,94 @@
 
    - 주문 검색 기능 개발
 
+     - 개요
+
+       - JPA에서 동적 쿼리를 어떻게 생성하는지 알기위해 배운다
+       - 동적쿼리로 JPQL/JPA Criteria보다 QueryDsl을 실무에서 많이 쓰지만 교육적인 목적으로 이런게 있다는 식으로 알아만두자
+
+     - JPQL 방식
+
+       - ```java
+         /**
+         * JPQL(동적쿼리)
+         * 너무 길고, 복잡해서 실무에서 잘 쓰지 않는다
+         */
+         public List<Order> findAllByString(OrderSearch orderSearch) {
+             StringBuilder jpql = new StringBuilder("SELECT o FROM Order o join o.member m");
+             boolean isFirstCondition = true;
+         
+             //주문 상태 검색
+             if (orderSearch.getOrderStatus() != null) {
+                 if (isFirstCondition) {
+                     jpql.append(" WHERE");
+                     isFirstCondition = false;
+                 } else {
+                     jpql.append(" AND");
+         
+                 }
+                 jpql.append(" o.status = :status");
+             }
+         
+             //회원 이름 검색
+             if (StringUtils.hasText(orderSearch.getMemberName())) {
+                 if (isFirstCondition) {
+                     jpql.append(" WHERE");
+                     isFirstCondition = false;
+                 } else {
+                     jpql.append(" AND");
+                 }
+                 jpql.append(" m.name LIKE :name");
+             }
+         
+             TypedQuery<Order> query = entityManager.createQuery(jpql.toString(), Order.class).setMaxResults(1000); //최대 1000건
+         
+             if (orderSearch.getOrderStatus() != null) {
+                 query.setParameter("status", orderSearch.getOrderStatus());
+             }
+             if (StringUtils.hasText(orderSearch.getMemberName())) {
+                 query.setParameter("name", orderSearch.getMemberName());
+             }
+         
+             return query.getResultList(); // JPQL 쿼리를 문자로 생성하기는 번거롭고, 실수로 인한 버그가 충분히 발생할 수 있다!!!
+         }
+         ```
+
+     - JPA Criteria
+
+       - ```java
+         /**
+         * JPA Criteria(동적쿼리)
+         * 아까보다 그나마 나은 방법이지만 QueryDSL보다는 어렵고, 실무에서 잘 쓰지 않는다.
+         * 유지/보수가 제로에 가깝다. 왜냐하면 보자마자 어떤 Query인지 감이 안 오기 때문
+         */
+         public List<Order> findALLByCriteria(OrderSearch orderSearch) {
+             CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+             CriteriaQuery<Order> criteriaQuery = criteriaBuilder.createQuery(Order.class);
+             Root<Order> orderRoot = criteriaQuery.from(Order.class);
+             Join<Order, Member> memberJoin = orderRoot.join("member", JoinType.INNER); //회원과 조인
+         
+             List<Predicate> criteria = new ArrayList<>();
+         
+             //주문 상태 검색
+             if (orderSearch.getOrderStatus() != null) {
+                 Predicate status = criteriaBuilder.equal(orderRoot.get("status"), orderSearch.getOrderStatus());
+                 criteria.add(status);
+             }
+         
+             //회원 이름 검색
+             if (StringUtils.hasText(orderSearch.getMemberName())) {
+                 Predicate name = criteriaBuilder.like(memberJoin.<String>get("name"), "%" + orderSearch.getMemberName() + "%");
+                 criteria.add(name);
+             }
+         
+             criteriaQuery.where(criteriaBuilder.and(criteria.toArray(new Predicate[criteria.size()])));
+             TypedQuery<Order> query = entityManager.createQuery(criteriaQuery).setMaxResults(1000);
+             return query.getResultList();
+         }
+         ```
+
+         
+
 7. 웹 계층 개발
 
 8. 정리

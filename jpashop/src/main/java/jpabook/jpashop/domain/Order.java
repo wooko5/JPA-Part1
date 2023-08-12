@@ -36,7 +36,7 @@ public class Order {
     private LocalDateTime orderDate;
 
     @Enumerated(EnumType.STRING)
-    private OrderStatus orderStatus; // 주문상태 [ORDER, CANCLE]
+    private OrderStatus status; // 주문상태 [ORDER, CANCLE]
 
     /* 연관관계 편의 메소드 생성, 양방향 관계에서 주인쪽(FK소유)에 메소드를 만들어주는게 좋다*/
     public void setMember(Member member) {
@@ -62,7 +62,7 @@ public class Order {
         for (OrderItem orderItem : orderItems) {
             order.addOrderItem(orderItem);
         }
-        order.setOrderStatus(ORDER);
+        order.setStatus(ORDER);
         order.setOrderDate(LocalDateTime.now());
         return order;
     }
@@ -72,7 +72,7 @@ public class Order {
         if (delivery.getDeliveryStatus() == DeliveryStatus.COMPLETED) {
             throw new IllegalStateException("이미 배송완료된 상품은 취소가 불가능합니다.");
         }
-        this.setOrderStatus(CANCLE);
+        this.setStatus(CANCLE);
         /**
          * this.orderItems로 써도 되지만 생략하는 이유:
          * 이미 IDE에서 해당 orderItems로만 써도 보라색으로 색칠하기 때문에 식별하기 쉬워서 굳이 this.orderItems로 쓰지 않았다.

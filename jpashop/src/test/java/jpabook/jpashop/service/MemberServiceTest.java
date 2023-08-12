@@ -113,8 +113,8 @@ public class MemberServiceTest {
 
         Order order1 = new Order();
         Order order2 = new Order();
-        order1.setOrderStatus(OrderStatus.ORDER);
-        order2.setOrderStatus(OrderStatus.ORDER);
+        order1.setStatus(OrderStatus.ORDER);
+        order2.setStatus(OrderStatus.ORDER);
         List<Order> orderList = new ArrayList<>(Arrays.asList(order1, order2));
 
         orderRepository.save(order1);
@@ -126,15 +126,15 @@ public class MemberServiceTest {
 
         entityManager.flush();
 
-//        List<Member> memberList = memberRepository.findAll();
-//        System.out.println("==========================================================");
-//        System.out.println("전체 멤버 데이터는 몇 개 일까 === " + memberList.size());
-//        System.out.println("==========================================================");
+        List<Member> memberList = memberRepository.findAll();
+        System.out.println("==========================================================");
+        System.out.println("전체 멤버 데이터는 몇 개 일까 === " + memberList.size());
+        System.out.println("==========================================================");
 
-        List<Order> orders = orderRepository.findAll();
-        System.out.println("==========================================================");
-        System.out.println("전체 주문 데이터는 몇 개 일까 === " + orders.size());
-        System.out.println("==========================================================");
+//        List<Order> orders = orderRepository.findAll();
+//        System.out.println("==========================================================");
+//        System.out.println("전체 주문 데이터는 몇 개 일까 === " + orders.size());
+//        System.out.println("==========================================================");
     }
 
 
