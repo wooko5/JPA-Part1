@@ -1092,9 +1092,44 @@
          }
          ```
 
-         
-
 7. 웹 계층 개발
 
-8. 정리
+   - 홈 화면과 레이아웃
 
+     - `th:replace` 
+
+       - `th:replace="fragments/~"`는 해당 부분을 fragment 디렉터리의 html파일로 대체 선언한다는 의미
+       - 레이아웃에서 공통적으로 적용되는 header나 footer 같은 경우, 모든 html 페이지마다 복붙해서 사용하기에는 너무 비효울적이다. 
+       - 그래서 fragments directory를 생성해서 레이아웃에서 공통적으로 쓸 부분들의 html 코드를 생성한다
+
+     - Hierarchical-style layouts
+
+       > 예제에서는 뷰 템플릿을 최대한 간단하게 설명하려고, header , footer 같은 템플릿 파일을 반복해서 포함한다. 즉 'Include-style layouts'을 적용했다.
+       >
+       > Hierarchical-style layouts을 참고하면 home.html에 보이는 header, footer 코드의 중복을 제거할 수 있다.
+       >
+       > 
+       >
+       > https://www.thymeleaf.org/doc/articles/layouts.html
+
+     - 부트스트랩 v4.3.1
+
+       - `src/main/resources/static` 경로에 css, js 폴더 복붙하고, 서버 재시작
+       - 오류 시
+         - `src/main/resources`를 싱크로나이즈 or Build 메뉴의 `build project`하면 된다
+
+   - 회원 등록
+
+   - 회원 목록 조회
+
+   - 상품 등록
+
+   - 상품 목록
+
+   - 상품 수정
+
+   - 변경 감지와 병합(merge)
+
+   - 주목 목록 검색, 취소
+
+8. 정리
