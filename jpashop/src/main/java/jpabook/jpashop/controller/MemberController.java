@@ -6,6 +6,7 @@ import jpabook.jpashop.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
@@ -24,7 +25,12 @@ public class MemberController {
     }
 
     @PostMapping("/members/new")
-    public String create(@Valid MemberForm form) {
+    public String create(@Valid MemberForm form, BindingResult result) {
+        //@Valid를 통해 MemberForm에 이상한 값이 들어갔는지 검증 ==> name이 @NotEmpty이기 때문에 name이 공백인지 아닌지 검증
+        if(result.hasErrors()){ //BindingResult 없을 때는 error 페이지가 나왔지만 BindingResult가 있다면 error를 핸들링할 수 있음 ==> createMemberForm.html을 유심히 보자
+            return "members/createMemberForm";
+        }
+
         Address address = new Address(form.getCity(), form.getStreet(), form.getZipcode());
         Member member = new Member();
         member.setName(form.getName());

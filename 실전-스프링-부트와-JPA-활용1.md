@@ -1217,6 +1217,7 @@
          @Controller
          @RequiredArgsConstructor
          public class MemberController {
+         
              private final MemberService memberService;
          
              @GetMapping("/members/new")
@@ -1224,10 +1225,35 @@
                  model.addAttribute("memberForm", new MemberForm());
                  return "members/createMemberForm";
              }
+         
+             @PostMapping("/members/new")
+             public String create(@Valid MemberForm form, BindingResult result) {
+                 //@Valid를 통해 MemberForm에 이상한 값이 들어갔는지 검증 ==> name이 @NotEmpty이기 때문에 name이 공백인지 아닌지 검증
+                 if(result.hasErrors()){ //BindingResult 없을 때는 error 페이지가 나왔지만 BindingResult가 있다면 error를 핸들링할 수 있음 ==> createMemberForm.html을 유심히 보자
+                     return "members/createMemberForm";
+                 }
+         
+                 Address address = new Address(form.getCity(), form.getStreet(), form.getZipcode());
+                 Member member = new Member();
+                 member.setName(form.getName());
+                 member.setAddress(address);
+                 memberService.join(member);
+                 return "redirect:/"; //SpringMVC1에서 배운 PRG 패턴 적용으로 무분별한 중복 POST 요청 방지!!!
+             }
          }
          ```
 
-         
+     - MemberForm을 쓰는 이유
+
+       - 단순하게 비슷한 Member 엔티티를 써도 되는 것처럼 느껴지지만,
+       - controller 및 화면에서 넘어오는 validation과 도메인 Entity validation은 서로 상이할 가능성이 매우 높음
+       - 화면에서 쓰는 폼 데이터와 관련 엔티티가 딱 맞아 떨어지는 경우가 실무에서는 매우 희박하다. 
+       - 그래서 폼 데이터 전송만을 위한 DTO를 따로 설계하는게 좋다
+
+     - 해야할 일
+
+       - javax.validation 공부하기
+       - [스프링과 타임리프 validation 연동](https://www.thymeleaf.org/doc/tutorials/3.0/thymeleafspring.html#validation-and-error-messages)
 
    - 회원 목록 조회
 
