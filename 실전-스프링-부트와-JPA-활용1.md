@@ -1197,7 +1197,37 @@
 
    - 회원 등록
 
-     - 
+     - 회원 등록 폼 객체
+
+       - ```java
+         @Getter
+         @Setter
+         public class MemberForm {
+             @NotEmpty(message = "회원 이름은 공백일 수 없습니다.")
+             private String name;
+             private String city;
+             private String street;
+             private String zipcode;
+         }
+         ```
+
+     - 회원 등록 컨트롤러
+
+       - ```java
+         @Controller
+         @RequiredArgsConstructor
+         public class MemberController {
+             private final MemberService memberService;
+         
+             @GetMapping("/members/new")
+             public String createForm(Model model) {
+                 model.addAttribute("memberForm", new MemberForm());
+                 return "members/createMemberForm";
+             }
+         }
+         ```
+
+         
 
    - 회원 목록 조회
 
