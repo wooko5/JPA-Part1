@@ -1287,10 +1287,66 @@
      - JPA 사용 시 주의점
 
        - Entity를 최대한 순수하게 유지
+
          - 실무에 가면 요구사항이 단순하지 않아서 Entity 만으로 모든 요청/응답을 처리하기 정말 힘듦
+
          - 그러므로 DTO나 VO를 만들어서 해당 페이지나 요구사항에 맞는 데이터 전달 객체를 만들어서 Entity는 핵심 비즈니스 로직만 가지고 순수하게 설계해야한다
 
+         - ```
+           > 참고: 폼 객체 vs 엔티티 직접 사용
+           
+           > 참고: 요구사항이 정말 단순할 때는 폼 객체( MemberForm ) 없이 엔티티( Member )를 직접 등록과 수정 화면에서 사용해도 된다. 하지만 화면 요구사항이 복잡해지기 시작하면, 엔티티에 화면을 처리하기 위한 기능이점점 증가한다. 
+           
+           결과적으로 엔티티는 점점 화면에 종속적으로 변하고, 이렇게 화면 기능 때문에 지저분해진 엔티티는 결국 유지보수하기 어려워진다.
+           
+           > 실무에서 엔티티는 핵심 비즈니스 로직만 가지고 있고, 화면을 위한 로직은 없어야 한다. 
+           화면이나 API에 맞는 폼 객체나 DTO를 사용하자. 
+           그래서 화면이나 API 요구사항을 이것들로 처리하고, 엔티티는 최대한 순수하게 유지하자.
+           ```
+
+           
+
    - 상품 등록
+
+     - 상품(Book) 폼 객체 만들기
+
+       - ```java
+         @Getter
+         @Setter
+         public class BookForm {
+             //TODO: 검증(validation 넣어보기)
+             private Long id;
+             private String name;
+             private int price;
+             private int stockQuantity;
+         
+             private String author;
+             private String isbn;
+         }
+         ```
+
+     - 상품 등록/조회 컨트롤러 생성
+
+       - ```java
+         @Controller
+         @RequiredArgsConstructor
+         public class ItemController {
+             private final ItemService itemService;
+         
+             @GetMapping("/items/new")
+             public String createForm(Model model){
+                 model.addAttribute("form", new BookForm());
+                 return "items/createItemForm";
+             }
+         
+             @PostMapping("/items/new")
+             public String create(BookForm form){
+                 Book book = Book.createBook(form.getName(), form.getPrice(), form.getStockQuantity(), form.getAuthor(), form.getIsbn());
+                 itemService.saveItem(book);
+                 return "redirect:/items";
+             }
+         }
+         ```
 
    - 상품 목록
 
