@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
@@ -37,5 +38,21 @@ public class MemberController {
         member.setAddress(address);
         memberService.join(member);
         return "redirect:/"; //SpringMVC1에서 배운 PRG 패턴 적용으로 무분별한 중복 POST 요청 방지!!!
+    }
+
+    /**
+     * 조회한 상품을 뷰에 전달하기 위해 스프링 MVC가 제공하는 모델(Model)객체에 보관
+     * 실행할 뷰 이름을 반환
+     */
+    @GetMapping("/members")
+    public String list(Model model){
+        /**
+         * 화면에서는 엔티티를 사용해도 괜찮지만, API에서는 절대 엔티티를 그대로 반환해서는 안 된다.
+         * 왜냐하면 API는 명세이기 때문에 엔티티의 속성을 추가하면 문서에 또 작성해야 하고, 비밀번호 같은 속성이 추가되면 보안적인 이유도 존재한다.
+         * 그래서 교육이니깐! 단순하게 엔티티인 Member를 반환했지만, DTO를 사용해서 정말 필요한 데이터만 있는 객체를 활용하자
+         */
+        List<Member> members = memberService.findMembers();
+        model.addAttribute("members", members);
+        return "members/memberList";
     }
 }

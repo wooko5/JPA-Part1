@@ -1248,7 +1248,7 @@
        - 단순하게 비슷한 Member 엔티티를 써도 되는 것처럼 느껴지지만,
        - controller 및 화면에서 넘어오는 validation과 도메인 Entity validation은 서로 상이할 가능성이 매우 높음
        - 화면에서 쓰는 폼 데이터와 관련 엔티티가 딱 맞아 떨어지는 경우가 실무에서는 매우 희박하다. 
-       - 그래서 폼 데이터 전송만을 위한 DTO를 따로 설계하는게 좋다
+       - 그래서 폼 데이터 전송만을 위한 객체나 DTO를 따로 설계하는게 좋다
 
      - 해야할 일
 
@@ -1256,6 +1256,39 @@
        - [스프링과 타임리프 validation 연동](https://www.thymeleaf.org/doc/tutorials/3.0/thymeleafspring.html#validation-and-error-messages)
 
    - 회원 목록 조회
+
+     - 회원 목록 조회 컨트롤러
+
+       - ```java
+         @Controller
+         @RequiredArgsConstructor
+         public class MemberController {
+         
+             private final MemberService memberService;
+             
+             /**
+              * 조회한 상품을 뷰에 전달하기 위해 스프링 MVC가 제공하는 모델(Model)객체에 보관
+              * 실행할 뷰 이름을 반환
+              */
+             @GetMapping("/members")
+             public String list(Model model){
+                 /**
+                  * 화면에서는 엔티티를 사용해도 괜찮지만, API에서는 절대 엔티티를 반환해서는 안 된다.
+                  * 왜냐하면 API는 명세이기 때문에 엔티티의 속성을 추가하면 또 작성해줘야하고, 비밀번호같은 속성이 추가되면 보안이유도 존재한다.
+                  * 그래서 교육이니깐! 단순하게 엔티티인 Member를 반환했지만, DTO를 사용해서 정말 필요한 데이터만 있는 객체를 활용하자
+                  */
+                 List<Member> members = memberService.findMembers();
+                 model.addAttribute("members", members);
+                 return "members/memberList";
+             }
+         }
+         ```
+
+     - JPA 사용 시 주의점
+
+       - Entity를 최대한 순수하게 유지
+         - 실무에 가면 요구사항이 단순하지 않아서 Entity 만으로 모든 요청/응답을 처리하기 정말 힘듦
+         - 그러므로 DTO나 VO를 만들어서 해당 페이지나 요구사항에 맞는 데이터 전달 객체를 만들어서 Entity는 핵심 비즈니스 로직만 가지고 순수하게 설계해야한다
 
    - 상품 등록
 
