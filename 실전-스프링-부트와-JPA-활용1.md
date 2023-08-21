@@ -674,7 +674,7 @@
      - `@RequiredArgsConstructor`을 쓰면 final로 초기화가 꼭 되어야하는 필드들만 따로 생성자 주입을 통해 파라미터로 이용하기에 개발자가 실수하지 않을 확률이 높아진다 
      
        - ```java
-        @PersistenceContext
+         @PersistenceContext
          private EntityManager entityManager;
          
          //기존에 쓰던 위의 코드를 @RequiredArgsConstructor를 추가하면 간단하게 EntityManager를 주입할 수 있다 
@@ -682,6 +682,7 @@
          ```
      
        - 원래는 `@PersistenceContext`를 선언해야 `EntityManager`를 쓸 수 있는데 Spring Data JPA가 지원해줘서 생성자 주입만으로도 쓸 수 있는 것, 추후에는 스프링 기본 라이브러리에서도 가능하게 추가될 예정이라고 한다
+       
      
    - 회원 기능 테스트
 
