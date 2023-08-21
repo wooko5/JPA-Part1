@@ -634,10 +634,10 @@
 
        - ```java
          /* 회원 단건 조회 */
-             @Transactional(readOnly = true)
-             public Member findOne(Long id){
-                 return memberRepository.findOne(id);
-             }
+         @Transactional(readOnly = true)
+         public Member findOne(Long id){
+             return memberRepository.findOne(id);
+         }
          ```
 
        - 디폴트는 false이다.
@@ -677,7 +677,7 @@
         @PersistenceContext
          private EntityManager entityManager;
          
-          /* 기존에 쓰던 위의 코드를 @RequiredArgsConstructor를 추가하면 간단하게 EntityManager를 주입할 수 있다 */
+         //기존에 쓰던 위의 코드를 @RequiredArgsConstructor를 추가하면 간단하게 EntityManager를 주입할 수 있다 
          private final EntityManager entityManager;
          ```
      
@@ -777,24 +777,24 @@
 
        - ```java
          @Test
-             public void 중복_회원_예외() throws Exception {
-                 //given
-                 Member memberA = new Member();
-                 memberA.setName("Oh");
+         public void 중복_회원_예외() throws Exception {
+             //given
+             Member memberA = new Member();
+             memberA.setName("Oh");
          
-                 Member memberB = new Member();
-                 memberB.setName("Oh");
+             Member memberB = new Member();
+             memberB.setName("Oh");
          
-                 //when
-                 memberService.join(memberA);
-                 try {
-                     memberService.join(memberB);
-                 } catch (IllegalStateException e) {
-                     return;
-                 }
+             //when
+             memberService.join(memberA);
+             try {
+                 memberService.join(memberB);
+             } catch (IllegalStateException e) {
+                 return;
+             }
          
-                 //then
-                 fail("예외가 발생해야한다!!!");
+             //then
+             fail("예외가 발생해야한다!!!");
          }
          
          /*=========아래는 개선된 코드 ========*/
