@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import java.util.List;
@@ -24,7 +26,7 @@ public class ItemController {
 
     @PostMapping("/items/new")
     public String create(BookForm form) {
-        Book book = Book.createBook(form.getName(), form.getPrice(), form.getStockQuantity(), form.getAuthor(), form.getIsbn());
+        Book book = Book.createBook(null, form.getName(), form.getPrice(), form.getStockQuantity(), form.getAuthor(), form.getIsbn());
         itemService.saveItem(book);
         return "redirect:/items";
     }
@@ -34,5 +36,26 @@ public class ItemController {
         List<Item> items = itemService.findItems();
         model.addAttribute("items", items);
         return "items/itemList";
+    }
+
+    @GetMapping("/items/{itemId}/edit")
+    public String updateItemForm(@PathVariable("itemId") Long itemId, Model model) {
+        //TODO:item의 Book, Album, Movie에 따라 알아서 매핑 및 생성되는 로직으로 변경해보기, BookForm 정적 팩토리 메소드 만들기
+        Book book = (Book) itemService.findItem(itemId);//이런 식으로 강제 캐스팅하는게 항상 좋은 코드는 아니다
+        BookForm form = new BookForm();
+        form.setName(book.getName());
+        form.setPrice(book.getPrice());
+        form.setStockQuantity(form.getStockQuantity());
+        form.setAuthor(form.getAuthor());
+        form.setIsbn(form.getIsbn());
+        model.addAttribute("form", form);
+        return "items/updateItemForm";
+    }
+
+    @PostMapping("/items/{itemId}/edit")
+    public String updateItem(@PathVariable("itemId") Long itemId, @ModelAttribute("form") BookForm form) {
+        Book book = Book.createBook(itemId, form.getName(), form.getPrice(), form.getStockQuantity(), form.getAuthor(), form.getIsbn());
+        itemService.saveItem(book);
+        return "redirect:/items";
     }
 }

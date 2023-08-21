@@ -9,8 +9,9 @@ import javax.persistence.Entity;
 
 @Entity
 @DiscriminatorValue("B")
-@Getter @Setter
-public class Book extends Item{
+@Getter
+@Setter
+public class Book extends Item {
     private String author;
     private String isbn;
 
@@ -19,8 +20,9 @@ public class Book extends Item{
 //    }
 
     /* Book을 위한 정적 팩토리 메서드 */
-    public static Book createBook(String name, int price, int stockQuantity, String author, String isbn){
+    public static Book createBook(Long id, String name, int price, int stockQuantity, String author, String isbn) {
         Book book = new Book();
+        if (id != null) book.setId(id);
         book.setName(name);
         book.setPrice(price);
         book.setStockQuantity(stockQuantity);
