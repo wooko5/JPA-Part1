@@ -43,11 +43,12 @@ public class ItemController {
         //TODO:item의 Book, Album, Movie에 따라 알아서 매핑 및 생성되는 로직으로 변경해보기, BookForm 정적 팩토리 메소드 만들기
         Book book = (Book) itemService.findItem(itemId);//이런 식으로 강제 캐스팅하는게 항상 좋은 코드는 아니다
         BookForm form = new BookForm();
+        form.setId(book.getId());
         form.setName(book.getName());
         form.setPrice(book.getPrice());
-        form.setStockQuantity(form.getStockQuantity());
-        form.setAuthor(form.getAuthor());
-        form.setIsbn(form.getIsbn());
+        form.setStockQuantity(book.getStockQuantity());
+        form.setAuthor(book.getAuthor());
+        form.setIsbn(book.getIsbn());
         model.addAttribute("form", form);
         return "items/updateItemForm";
     }
