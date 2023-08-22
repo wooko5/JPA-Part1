@@ -1356,11 +1356,104 @@
 
    - 상품 수정
 
+     - 코드
+
+       - ```java
+         @GetMapping("/items/{itemId}/edit")
+         public String updateItemForm(@PathVariable("itemId") Long itemId, Model model) {
+             //TODO:item의 Book, Album, Movie에 따라 알아서 매핑 및 생성되는 로직으로 변경해보기, BookForm 정적 팩토리 메소드 만들기
+             Book book = (Book) itemService.findItem(itemId);//이런 식으로 강제 캐스팅하는게 항상 좋은 코드는 아니다
+             BookForm form = new BookForm();
+             form.setId(book.getId());
+             form.setName(book.getName());
+             form.setPrice(book.getPrice());
+             form.setStockQuantity(book.getStockQuantity());
+             form.setAuthor(book.getAuthor());
+             form.setIsbn(book.getIsbn());
+             model.addAttribute("form", form);
+             return "items/updateItemForm";
+         }
+         
+         @PostMapping("/items/{itemId}/edit")
+         public String updateItem(@PathVariable("itemId") Long itemId, @ModelAttribute("form") BookForm form) {
+             Book book = Book.createBook(itemId, form.getName(), form.getPrice(), form.getStockQuantity(), form.getAuthor(), form.getIsbn());
+             itemService.saveItem(book);
+             return "redirect:/items";
+         }
+         ```
+
      - 주의
+
        - 로그인 사용자가 상품수정에 대한 권한 유무를 확인해주는 비즈니스 로직을 서비스단에 추가해야 한다
        - 수정할 객체를 session에 담아두고 사용하는 방법도 있지만 구현이 어렵고, 자주 안 사용하는 방법
 
-   - 변경 감지와 병합(merge)
+   - **변경 감지와 병합(merge)**
+
+     - **준영속 엔티티(Detached Entity)** 개념
+
+       - **영속성 컨텍스트가 더 이상 관리하지 않는 엔티티**를 의미
+
+       - **식별자(PK)가 존재하는 엔티티**, 즉 JPA를 통해 DB에 갔다왔던 엔티티를 뜻하기도 함
+
+       - ```markdown
+         여기서는 itemService.saveItem(book) 에서 수정을 시도하는 Book 객체다. 
+         
+         Book 객체는 이미 DB에 한번 저장되어서 식별자가 존재한다. 
+         
+         이렇게 임의로 만들어낸 엔티티도 기존 식별자를 가지고 있으면 준영속 엔티티로 볼 수 있다.
+         ```
+
+     - 준영속 엔티티를 수정하는 2가지 방법
+
+       - 변경 감지 (강추)
+       - 병합(Merge)
+
+     - 변경 감지(Dirty Checking) 기능 사용
+
+       - ```java
+         @Transactional
+         public void updateItem(Long itemId, Book param){
+             Item foundItem = itemRepository.findOne(itemId);
+             foundItem.setName(param.getName());
+             foundItem.setPrice(param.getPrice());
+             foundItem.setStockQuantity(param.getStockQuantity());
+         //        itemRepository.save(foundItem); //해당 코드를 사용하지 않아도 foundItem는 영속 상태의 엔티티라서 save()를 쓰지않아도 된다
+         }
+         ```
+
+     - 병합(Merge)
+
+       - 병합은 준영속 상태의 엔티티를 영속 상태로 변경할 때 사용하는 기능
+
+       - ```java
+         @Transactional
+         void update(Item itemParam) { //itemParam: 파리미터로 넘어온 준영속 상태의 엔티티
+          Item mergeItem = em.merge(itemParam);
+         }
+         
+         //'itemParam'은 준영속 상태의 엔티티지만 'mergeItem'은 영속 상태의 엔티티다
+         
+         /*
+         1. 준영속 엔티티의 식별자 값으로 영속 엔티티를 조회한다.
+         2. 영속 엔티티의 값을 준영속 엔티티의 값으로 모두 교체한다.(병합한다.)
+         3. 트랜잭션 커밋 시점에 변경 감지 기능이 동작해서 데이터베이스에 UPDATE SQL이 실행
+         */
+         ```
+
+       - ![image-20230823001159700](C:\Users\wooko\AppData\Roaming\Typora\typora-user-images\image-20230823001159700.png)
+
+     - 변경 감지와 병합의 차이점
+
+       - 변경 감지 기능을 사용하면 원하는 속성만 선택해서 변경할 수 있지만, 병합을 사용하면 모든 속성이 변경된다. 
+       - **즉 병합시 값이 없으면 null 로 업데이트 할 위험도 있다. (병합은 모든 필드를 교체한다.)**
+
+     - 해결방법
+
+       - 변경 감지를 최대한 사용하자
+       - 컨트롤러에서 어설프게 엔티티를 생성하지 마라
+       - 트랜잭션이 있는 서비스 계층에 식별자( id )와 변경할 데이터를 명확하게 전달. ex) parameter or DTO
+       - 트랜잭션이 있는 서비스 계층에서 영속 상태의 엔티티를 조회하고, 엔티티의 데이터를 직접 변경.
+       - 트랜잭션 커밋 시점에 변경 감지가 실행
 
    - 주목 목록 검색, 취소
 

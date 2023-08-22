@@ -22,7 +22,7 @@ public class Book extends Item {
     /* Book을 위한 정적 팩토리 메서드 */
     public static Book createBook(Long id, String name, int price, int stockQuantity, String author, String isbn) {
         Book book = new Book();
-        if (id != null) book.setId(id);
+        if (id != null) book.setId(id); //PK가 있다면 준영속 엔티티(Detached Entity)
         book.setName(name);
         book.setPrice(price);
         book.setStockQuantity(stockQuantity);
