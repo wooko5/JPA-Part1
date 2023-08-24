@@ -1500,6 +1500,57 @@
 
    - 주목 목록 검색, 취소
 
-     - 
+     - @ModelAttribute
+
+       - 요청 파라미터의 이름으로 해당객체의 프로퍼티를 찾고, 해당 프로퍼티의 setter를 호출해서 파라미터 값을 설정한다
+
+       - 예시 코드
+
+         - ```java
+           @GetMapping("/orders")
+           public String orderList(@RequestParam String memberName, @RequestParam OrderStatus orderStatus, Model model) {
+               //@ModelAttribute 적용 전
+               OrderSearch o = new OrderSearch();
+               o.setMemberName(memberName);
+               o.setOrderStatus(OrderStatus);
+               List<Order> orders = orderService.findOrders(o);
+               model.addAttribute("orders", orders);
+               return "order/orderList";
+           }
+           
+           /*===========================================*/
+           
+           @GetMapping("/orders")
+           public String orderList(@ModelAttribute("orderSearch") OrderSearch orderSearch, Model model) {
+               //@ModelAttribute 적용 후
+               List<Order> orders = orderService.findOrders(orderSearch);
+               model.addAttribute("orders", orders);
+               return "order/orderList";
+           }
+           ```
+
+     - orderList()
+
+       - ```java
+         @GetMapping("/orders")
+         public String orderList(@ModelAttribute("orderSearch") OrderSearch orderSearch, Model model) {
+             //단순한 조회인 경우, 컨트롤러에서 바로 레포지토리를 주입받아서 사용해도 무관
+             List<Order> orders = orderService.findOrders(orderSearch);
+             model.addAttribute("orders", orders);
+             return "order/orderList";
+         }
+         ```
+
+     - cancelOrder()
+
+       - ```java
+         @PostMapping("/orders/{orderId}/cancel")
+         public String cancelOrder(@PathVariable("orderId") Long id){
+             orderService.cancelOrder(id);
+             return "redirect:/orders";
+         }
+         ```
+
+         
 
 8. 정리
