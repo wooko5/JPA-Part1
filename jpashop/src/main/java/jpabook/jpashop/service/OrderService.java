@@ -21,6 +21,13 @@ public class OrderService {
     private final MemberRepository memberRepository;
     private final ItemRepository itemRepository;
 
+    /**
+     * OrderService에서 order() 메서드를 만든 이유
+     * OrderService의 메소드에는 Controller의 메소드와 다르게 `@Transactional` 어노테이션이 존재한다
+     * @Transactional이 선언되어 있다면 엔티티를 조회하거나 생성할 때, 영속성 컨텍스트 안에서 영속성을 유지하기 때문에
+     * 해당 엔티티를 수정하면 `변경 감지(Dirty Checking)` 발생
+     * TIP) 파라미터로 엔티티를 받으면 repository에서 가져온 영속성의 엔티티가 아니기에 식별자(id, name..)로 받는 것을 추천
+     */
     //주문하기
     @Transactional
     public Long order(Long memberId, Long itemId, int count) {
