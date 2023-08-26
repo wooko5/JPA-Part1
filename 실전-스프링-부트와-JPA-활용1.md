@@ -1440,7 +1440,7 @@
          */
          ```
 
-       - ![image-20230823001159700](C:\Users\wooko\AppData\Roaming\Typora\typora-user-images\image-20230823001159700.png)
+       - ![image-20230823001159700](https://github.com/wooko5/JPA-Part1/assets/58154633/70945eb0-2490-4e6e-8429-da1a167c7af3)
 
      - 변경 감지와 병합의 차이점
 
