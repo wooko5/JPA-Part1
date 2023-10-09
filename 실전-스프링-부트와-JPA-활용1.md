@@ -1550,7 +1550,3 @@
              return "redirect:/orders";
          }
          ```
-
-         
-
-8. 정리
