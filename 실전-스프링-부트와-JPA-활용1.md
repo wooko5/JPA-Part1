@@ -1417,7 +1417,7 @@
              foundItem.setName(param.getName());
              foundItem.setPrice(param.getPrice());
              foundItem.setStockQuantity(param.getStockQuantity());
-         //        itemRepository.save(foundItem); //해당 코드를 사용하지 않아도 foundItem는 영속 상태의 엔티티라서 save()를 쓰지않아도 된다
+         //        itemRepository.save(foundItem); //해당 코드를 사용하지 않아도 foundItem는 영속 상태의 엔티티라서 save()를 쓰지않아도 된다 ==> itemId는 준영속 엔티티의 PK인데 해당 PK로 영속성 컨텍스트에서 영속 엔티티를 불러와서 수정하면 변경 감지 발생 ==> 그러나 준영속 엔티티를 수정해도 변경감지가 일어나지 않는다.
          }
          ```
 
